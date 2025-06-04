@@ -22,10 +22,27 @@ def run_program(name, lines):
         if name in breakpoints and line_no in breakpoints[name]:
             if name in attached_client:
                 sock = attached_client[name]
-                sock.send(f"BREAK at {name} line {line_no}: {line}\n".encode())
+                try:
+                    sock.send(f"BREAK at {name} line {line_no}: {line}\n".encode())
+                except:
+                    print(f"[{name}] Failed to send BREAK info. Disconnecting client.")
+                    break
 
                 while True:
-                    cmd = sock.recv(1024).decode().strip()
+                    try:
+                        raw = sock.recv(1024)
+                        if not raw:
+                            print(f"[{name}] Client disconnected.")
+                            return  # oprește execuția
+                        cmd = raw.decode(errors="ignore").strip()
+                        cmd = ' '.join(cmd.split())
+                    except ConnectionResetError:
+                        print(f"[{name}] Connection reset by client.")
+                        return
+                    except Exception as e:
+                        print(f"[{name}] Error reading command: {e}")
+                        return
+
                     try:
                         cmd_parts = shlex.split(cmd)
                     except ValueError:
@@ -69,13 +86,18 @@ def run_program(name, lines):
             except Exception as e:
                 print(f"[{name}] Error: {e}")
                 break
+
         time.sleep(1)
         line_no += 1
 
     if name in attached_client:
-        sock = attached_client[name]
-        sock.send(f"[{name}] Execution finished.\n".encode())
+        try:
+            sock = attached_client[name]
+            sock.send(f"[{name}] Execution finished.\n".encode())
+        except:
+            print(f"[{name}] Could not notify client of completion.")
         del attached_client[name]
+
 
 # Client
 def handle_client(sock):
