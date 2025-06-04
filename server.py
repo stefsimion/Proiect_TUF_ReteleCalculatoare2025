@@ -220,8 +220,8 @@ def handle_client(sock):
         del logged_in_users[username]
 
 def start_server():
-    programs["prog1"] = ["a = 2", "b = a + 3", "c = b * 2"]
-    programs["prog2"] = ["x = 5", "y = x + 1", "z = y / 2"]
+    programs["prog1"] = ["a = 2", "b = a + 3", "c = 3 * ( b + 7 )", "d = c"]
+    programs["prog2"] = ["x = 5", "y = x + 1", "z = y / 2", "h = z"]
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(("localhost", 54321))

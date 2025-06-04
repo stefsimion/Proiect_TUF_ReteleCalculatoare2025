@@ -43,19 +43,6 @@ def main():
             break
     sock.close()
 
-#user1
-#pass1
-#addbp prog1 1
-#addbp prog1 2
-#attach prog1
-#detach prog1
-
-#când apare BREAK:
-#eval a
-#set a 15
-#continue
-#eval b
-#continue
 
 if __name__ == "__main__":
     main()
